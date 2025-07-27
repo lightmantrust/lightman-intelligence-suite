@@ -1,0 +1,13 @@
+/lightman-intelligence-suite
+|
+|-- /frontend
+|   |-- /components
+|   |-- /contexts
+|   |-- /lib
+|   |-- /pages
+|   |-- /styles
+|
+|-- /supabase
+|   |-- /functions
+|   |   |-- /seek-solution
+|   |-- /migrations
