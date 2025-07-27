@@ -1,0 +1,55 @@
+Create Your Supabase Project
+Go to supabase.com/dashboard and click "New project".
+Give your project a name and a strong database password.
+Wait for the project to be provisioned.
+Once ready, navigate to Project Settings > API. You will need the Project URL and the anon public key for Step 4.
+3. Set Up the Database & Security
+This single script creates all necessary tables and security policies.
+In your Supabase project dashboard, go to the SQL Editor.
+Click "+ New query".
+Locate the migration file in this repository: /supabase/migrations/20231027000000_initial_schema.sql.
+Copy the entire content of this SQL file and paste it into the Supabase SQL Editor.
+Click the "Run" button. This will create the Clients, Agents, and Tasks tables, and enable Row Level Security to ensure users can only access their own data.
+4. Configure Environment Variables
+The frontend needs your Supabase API keys to connect to the backend.
+Navigate into the frontend directory: cd frontend.
+Create a new file named .env.local by copying the example file:
+Generated bash
+cp .env.local.example .env.local
+Use code with caution.
+Bash
+Open the .env.local file and add the API keys from Step 2:
+Generated code
+NEXT_PUBLIC_SUPABASE_URL=YOUR_SUPABASE_PROJECT_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+Use code with caution.
+IMPORTANT: The .env.local file contains sensitive keys and is included in .gitignore by default. Never commit this file to GitHub.
+5. Run the Frontend Application
+Now you are ready to install dependencies and launch the app.
+Make sure you are in the /frontend directory.
+Install the required Node.js packages:
+Generated bash
+npm install
+Use code with caution.
+Bash
+Start the development server:
+Generated bash
+npm run dev
+Use code with caution.
+Bash
+Open your browser and navigate to http://localhost:3000. You can now sign up for a new account and start using the dashboard.
+➤ Deploying the AI Engine (DeepSeek Function)
+The final step is to deploy the backend AI logic to Supabase.
+Make sure you have the Supabase CLI installed and are logged in (npx supabase login).
+From the root directory of the project (/lightman-intelligence-suite), link your local project to your remote Supabase project:
+Generated bash
+npx supabase link --project-ref <your-project-ref>
+Use code with caution.
+Bash
+(You can find your <project-ref> in your Supabase project's URL: https://app.supabase.com/project/<project-ref>)
+Deploy the seek-solution function:
+Generated bash
+npx supabase functions deploy seek-solution
+Use code with caution.
+Bash
+Once deployed, the "Seek Solution" button in your dashboard will be fully functional, providing AI-generated insights for your clients.
