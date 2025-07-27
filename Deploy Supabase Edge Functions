@@ -1,0 +1,50 @@
+
+---
+
+### **2. Supabase Backend Files**
+
+#### **File: `supabase/migrations/20231027000000_initial_schema.sql`**
+```sql
+-- Create Clients Table
+CREATE TABLE Clients (
+    client_id SERIAL PRIMARY KEY,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    industry VARCHAR(100),
+    trust_score DECIMAL(5, 2) DEFAULT 75.00,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Create Agents Table (publicly readable)
+CREATE TABLE Agents (
+    agent_id SERIAL PRIMARY KEY,
+    agent_name VARCHAR(255) NOT NULL,
+    agent_type VARCHAR(50) CHECK (agent_type IN ('human', 'ai_llm'))
+);
+
+-- Create Tasks Table
+CREATE TABLE Tasks (
+    task_id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    status VARCHAR(50) DEFAULT 'pending',
+    assigned_to INT REFERENCES Agents(agent_id),
+    related_client INT REFERENCES Clients(client_id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Seed with a generic agent
+INSERT INTO Agents (agent_name, agent_type) VALUES ('DeepSeek-Alpha', 'ai_llm');
+
+-- Enable Row Level Security (RLS)
+ALTER TABLE "public"."clients" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "public"."tasks" ENABLE ROW LEVEL SECURITY;
+
+-- Create Security Policies
+CREATE POLICY "Allow authenticated users to manage their own clients"
+ON "public"."clients" FOR ALL
+USING (auth.uid() = user_id)
+WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Allow users to manage tasks linked to their own clients"
+ON "public"."tasks" FOR ALL
+USING (auth.uid() = (SELECT user_id FROM clients WHERE clients.client_id = tasks.related_client));
